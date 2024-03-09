@@ -1,0 +1,59 @@
+/* Estilos para los bloques */
+        
+        .bloque {
+            width: 55px;
+            height: 20px;
+            position: absolute;
+            background: linear-gradient(#47148a, #9198e5);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-image: url(fondo.jpeg);
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center center;
+            width: 100vw;
+            height: 100vh;
+        }
+
+
+        #raqueta {
+            position: absolute;
+            top: 85vh;
+            left: 45vw;
+            width: 120px; /* Ajusta según sea necesario */
+            height: 20px;
+            background: linear-gradient(#c5b3f0, #a363ec);
+        }
+
+        #pelota {
+            position: absolute;
+            top: 75vh;
+            left: 45vw;
+            width: 30px; /* Ajusta según sea necesario */
+            height: 30px;
+            background: linear-gradient(#ec9b9b, #5e2077);
+            border-radius: 50%; /* Añade un borde redondeado para simular la forma de una pelota */
+        }
+
+        #corazon {
+            position: absolute;
+            top: 45vh;
+            left: 45vw;
+            width: 100px;
+            height: 100px;
+            display: none; /* Inicialmente visible */
+        }
+        #numero-animado {
+            position: absolute;
+            color: black;
+            top: 50vh;
+            left: 98vh;
+            font-size: 55px;
+            display: none; /* Inicialmente visible */
+        }

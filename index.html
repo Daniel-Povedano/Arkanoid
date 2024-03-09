@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" href="favicon.jpg" type="image/x-icon">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>HipoArka</title>
+
+    <script>
+        window.onload = function () {
+            let puntuacion = 0;
+            let automatico;
+            let limitesraqueta;
+            let vidas = 3;
+            let golpes;
+            let limiteAbajo = false;
+            let limiteDerecho = false;
+            let vivo = false;
+            let body = document.getElementById("cuerpo");
+            let div = document.getElementById("div1");
+            let pelota = document.getElementById("pelota");
+            let corazon = document.getElementById("corazon");
+            let bloques = document.getElementsByClassName("bloque");
+            document.onclick = click;
+            window.addEventListener("keypress", pulsa);
+
+
+        
+            // Evento de colisión de la pelota con los bloques
+            setInterval(function () {
+                for (let i = 0; i < bloques.length; i++) {
+                let bloque = bloques[i];
+
+            // Coordenadas del bloque y la pelota
+                let bloqueRect = bloque.getBoundingClientRect();
+                let pelotaRect = pelota.getBoundingClientRect();
+
+            // Comprueba colisión
+                if (
+                pelotaRect.bottom >= bloqueRect.top &&
+                pelotaRect.top <= bloqueRect.bottom &&
+                pelotaRect.right >= bloqueRect.left &&
+                pelotaRect.left <= bloqueRect.right
+                ) {
+                bloque.style.display = "none"; // Oculta el bloque
+                rebotePelota(bloqueRect, pelotaRect);
+                aumentarPuntuacion();
+                // Aquí puedes agregar lógica adicional para cambiar la dirección de la pelota, puntajes, etc.
+                }
+                }
+            }, 1);
+
+            function aumentarPuntuacion() {
+                puntuacion = puntuacion +100;
+                document.getElementById("puntuacion").innerText = "Score: " + puntuacion;
+            }
+
+            function rebotePelota(bloqueRect, pelotaRect) {
+                let centroBloqueX = bloqueRect.left + bloqueRect.width / 2;
+                let centroPelotaX = pelotaRect.left + pelotaRect.width / 2;
+
+                let centroBloqueY = bloqueRect.top + bloqueRect.height / 2;
+                let centroPelotaY = pelotaRect.top + pelotaRect.height / 2;
+
+                let offsetX = Math.abs(centroPelotaX - centroBloqueX) - (pelotaRect.width + bloqueRect.width) / 2;
+                let offsetY = Math.abs(centroPelotaY - centroBloqueY) - (pelotaRect.height + bloqueRect.height) / 2;
+
+                if (offsetX > offsetY) {
+                    limiteAbajo = !limiteAbajo;
+                } else {
+                    limiteDerecho = !limiteDerecho;
+                }
+            }
+
+            function crearBloques(filas, columnas) {
+                const espacioEntreBloques = 20; // Ajusta según sea necesario
+
+                const anchoPantalla = window.innerWidth; // Ancho de la pantalla
+                const altoPantalla = window.innerHeight; // Alto de la pantalla
+
+                const espacioTotalBloques = columnas * (60 + espacioEntreBloques) - espacioEntreBloques;
+                const margenIzquierdo = (anchoPantalla - espacioTotalBloques) / 2;
+                const margenSuperior = 50; // Ajusta según sea necesario
+
+                for (let i = 0; i < filas; i++) {
+                    for (let j = 0; j < columnas; j++) {
+                        let bloque = document.createElement("div");
+                        bloque.className = "bloque";
+                        bloque.style.top = (margenSuperior + i * (20 + espacioEntreBloques)) + "px";
+                        bloque.style.left = (margenIzquierdo + j * (60 + espacioEntreBloques)) + "px";
+
+
+                        document.getElementById("div1").appendChild(bloque);
+                    }
+                }
+            }
+
+            // Llamada a la función para crear bloques (aquí se crean 5 bloques, ajusta según necesites)
+            crearBloques(3, 15);
+
+            function limites() {
+                if(raqueta.offsetLeft <= 0) {
+                    raqueta.style.left = 0 + 'px';
+                }
+
+            }
+            function pelotaconraqueta() {
+                pelota.style.top = raqueta.offsetTop - pelota.offsetHeight + "px";
+                pelota.style.left = raqueta.offsetLeft + pelota.offsetWidth + "px";
+            }
+
+            function pulsa(event) {
+                let tecla = String.fromCharCode(event.charCode);
+                if (tecla == "a" || (tecla == "A" && vivo)) {
+                    raquetaizquierda();
+                    
+                }
+                if (tecla == "d" || (tecla == "D" && vivo)) {
+                    raquetaderecha();
+                }
+
+                if (!vivo) {
+                    pelotamuerta();
+                }
+            }
+            function pelotamuerta() {
+                pelota.style.top = raqueta.offsetTop - pelota.offsetHeight + "px";
+                pelota.style.left = raqueta.offsetLeft + pelota.offsetWidth + "px";
+            }
+            function raquetaizquierda() {
+                if(raqueta.offsetLeft <= 0) {
+                    raqueta.style.left = 0 + 'px';
+                }else{
+                    raqueta.style.left = raqueta.offsetLeft - 15 + "px";
+                }
+            }
+
+            function raquetaderecha() {
+                if(raqueta.offsetLeft + raqueta.offsetWidth >= body.offsetWidth) {
+                    raqueta.style.left = body.offsetWidth - raqueta.offsetWidth + 'px';
+                } else {
+                    raqueta.style.left = raqueta.offsetLeft + 15 + "px";
+                }
+                
+            }
+
+            function click() {
+                if (!vivo) {
+                    automatico = setInterval(mover, 1);
+                    vivo = true;
+                }
+            }
+
+            function mover() {
+                if (pelota.offsetTop + pelota.offsetHeight == raqueta.offsetTop) {
+                    if (
+                        raqueta.offsetLeft + raqueta.offsetWidth > pelota.offsetLeft &&
+                        raqueta.offsetLeft < pelota.offsetLeft + pelota.offsetWidth 
+                    ) {
+                        limiteAbajo = true;
+                    }
+                }
+                if (body.offsetHeight - pelota.offsetTop == pelota.offsetHeight) {
+                    //esta abajo
+                    muerto();
+                    vivo = false;
+                    limiteAbajo = true;
+                    clearInterval(automatico);
+                    quitarvida();
+                }
+                if (pelota.offsetTop == 0) {
+                    limiteAbajo = false;
+                }
+                if (!limiteAbajo) {
+                    pelota.style.top = pelota.offsetTop + 1 + "px";
+                } else {
+                    pelota.style.top = pelota.offsetTop - 1 + "px";
+                }
+                //esta a la derecha
+                if (body.offsetWidth - pelota.offsetLeft == pelota.offsetWidth) {
+                    limiteDerecho = true;
+                } else if (pelota.offsetLeft == 0) {
+                    limiteDerecho = false;
+                }
+                if (!limiteDerecho) {
+                    pelota.style.left = pelota.offsetLeft + 1 + "px";
+                } else {
+                    pelota.style.left = pelota.offsetLeft - 1 + "px";
+                }
+            }
+
+            function raquetamouse(ev) {
+                if(raqueta.offsetLeft <= 0) {
+                    raqueta.style.left = 1 + 'px';
+                }else{
+                    if(raqueta.offsetLeft + raqueta.offsetWidth >= body.offsetWidth) {
+                    raqueta.style.left = body.offsetWidth - raqueta.offsetWidth - 1 + 'px';
+                    } else {
+                        raqueta.style.left = (ev.clientX -raqueta.offsetWidth/2) + 'px';
+                    }
+                }
+                if (!vivo) {
+                    pelotamuerta();
+                }
+            }
+            window.addEventListener('mousemove',raquetamouse);
+
+
+            function muerto() {
+                pelota.style.top = raqueta.offsetTop - pelota.offsetHeight + "px";
+                pelota.style.left = raqueta.offsetLeft + pelota.offsetWidth + "px";
+            }
+
+            function quitarvida() {
+                vidas--;
+                let numero = vidas;
+                document.getElementById("numero-animado").innerText = "x " + numero;
+
+                // Mostrar el corazón y el número durante 1 segundo
+                document.getElementById("corazon").style.display = "block";
+                document.getElementById("numero-animado").style.display = "block";
+
+                if (vidas > 0) {
+                    setTimeout(() => {
+                        // Ocultar el corazón y el número después de 1 segundo
+                        document.getElementById("corazon").style.display = "none";
+                        document.getElementById("numero-animado").style.display = "none";
+                    }, 1000);
+                } else {
+                    // Fin de la partida
+                    setTimeout(() => {
+                        alert("Fin de la partida");
+                        document.onclick = null;
+                        window.removeEventListener('mousemove', raquetamouse);
+                        window.removeEventListener("keypress", pulsa);
+                    }, 100);
+                }
+            }
+        }
+    </script>
+</head>
+
+<body id="cuerpo">
+    <div id="div1">
+        <div id="puntuacion" style="position: absolute; top: 1%; left: 10px; color: rgb(3, 0, 5); font-family:'Times New Roman', Times, serif; font-size:40px;">Score: 0</div>
+        <div id="raqueta"></div>
+        <div id="pelota"></div>
+        <img id="corazon" src="corazon.png">
+        <div id="numero-animado">x 3</div>
+    </div>
+</body>
+
+</html>
